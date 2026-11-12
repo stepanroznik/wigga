@@ -1,0 +1,11 @@
+Wigga is based on Wiggly by MojArch and contributors.
+https://github.com/Arch-Lover/wiggly
+
+Wiggly is based on Wiggle by mechtifs and contributors.
+https://github.com/mechtifs/wiggle
+
+Wiggle derives its cursor scaling effect from Jiggle by Jeff Channell.
+https://github.com/jeffchannell/jiggle
+
+The live cursor texture rendering follows GNOME Shell's Magnifier.
+https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/46.0/js/ui/magnifier.js
