@@ -3,10 +3,16 @@
   "name": "Wigga",
   "description": "Shake your mouse to enlarge the pointer. It keeps growing while you shake and smoothly returns to normal size when you stop. A fork of Wiggly.",
   "shell-version": [
-    "46"
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50",
+    "51"
   ],
   "url": "https://github.com/stepanroznik/wigga",
   "settings-schema": "org.gnome.shell.extensions.wigga",
   "gettext-domain": "gnome-shell-extension-wigga",
-  "version-name": "1.0.0"
+  "version-name": "1.1.0"
 }

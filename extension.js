@@ -3,15 +3,45 @@
 
 import GLib from 'gi://GLib';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
-import { getPointerWatcher } from 'resource:///org/gnome/shell/ui/pointerWatcher.js';
+import { PACKAGE_VERSION } from 'resource:///org/gnome/shell/misc/config.js';
 
 import { Field } from './const.js';
 import Effect from './effect.js';
 import History from './history.js';
 
-const removePointerWatch = (watch) => {
-    watch?.remove();
-};
+const shellVersion = Number.parseInt(PACKAGE_VERSION, 10);
+const legacyPointerWatcher = shellVersion < 51
+    ? await import('resource:///org/gnome/shell/ui/pointerWatcher.js')
+    : null;
+
+function watchPointer(tracker, interval, onMove) {
+    if (legacyPointerWatcher)
+        return legacyPointerWatcher.getPointerWatcher().addWatch(interval, onMove);
+
+    let [lastX, lastY] = global.get_pointer();
+    let pending = 0;
+    const signal = tracker.connect('position-invalidated', () => {
+        if (pending)
+            return;
+        pending = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+            pending = 0;
+            const [x, y] = global.get_pointer();
+            if (x !== lastX || y !== lastY) {
+                lastX = x;
+                lastY = y;
+                onMove(x, y);
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+    });
+    return {
+        remove() {
+            tracker.disconnect(signal);
+            if (pending)
+                GLib.Source.remove(pending);
+        },
+    };
+}
 
 export default class WiggaExtension extends Extension {
     _onCheckIntervalChange(interval) {
@@ -49,10 +79,9 @@ export default class WiggaExtension extends Extension {
 
     _onDrawIntervalChange(interval) {
         this._drawInterval = interval;
-        if (this._drawIntervalWatch) {
-            removePointerWatch(this._drawIntervalWatch);
-        }
-        this._drawIntervalWatch = this._pointerWatcher.addWatch(interval, (x, y) => {
+        this._drawIntervalWatch?.remove();
+        const tracker = this._effect.cursor.tracker;
+        this._drawIntervalWatch = watchPointer(tracker, interval, (x, y) => {
             this._history.push(x, y);
             if (this._effect.isWiggling) {
                 this._effect.move(x, y);
@@ -70,7 +99,7 @@ export default class WiggaExtension extends Extension {
                 this._effect.unmagnify();
             }
             if (this._drawIntervalWatch) {
-                removePointerWatch(this._drawIntervalWatch);
+                this._drawIntervalWatch.remove();
                 this._drawIntervalWatch = null;
                 this._history.clear();
             }
@@ -78,7 +107,7 @@ export default class WiggaExtension extends Extension {
     }
 
     enable() {
-        this._pointerWatcher = getPointerWatcher();
+        this._isHiddenByProgram = false;
         this._history = new History();
         this._effect = new Effect();
         this._settings = this.getSettings();
@@ -113,7 +142,6 @@ export default class WiggaExtension extends Extension {
             this._effect.destroy();
         }
         this._effect = null;
-        this._pointerWatcher = null;
         this._history = null;
         this._settings = null;
     }

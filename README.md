@@ -4,7 +4,7 @@ Lost your pointer? Shake the mouse to make it bigger. Wigga enlarges the cursor 
 
 ## Install
 
-Wigga supports GNOME Shell 46. Download the ZIP from [GitHub Releases](https://github.com/stepanroznik/wigga/releases/latest), then run this from your download folder.
+Wigga targets GNOME Shell 45 through 51. The cursor effect was tested on GNOME Shell 46. Compatibility with the other versions was checked against GNOME and Mutter source. Download the ZIP from [GitHub Releases](https://github.com/stepanroznik/wigga/releases/latest), then run this from your download folder.
 
 ```sh
 gnome-extensions install wigga@stepanroznik.github.io.shell-extension.zip
