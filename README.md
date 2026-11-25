@@ -1,3 +1,5 @@
+<img src="icon.svg" width="96" height="96" alt="" align="right">
+
 # Wigga
 
 Lost your pointer? Shake the mouse to make it bigger. Wigga enlarges the cursor you're already using, keeps growing while you shake, and shrinks back when you stop. The enlarged cursor keeps its pixel edges.
